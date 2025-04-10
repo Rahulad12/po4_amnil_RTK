@@ -1,52 +1,51 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { userState } from "../types";
+import { userState, authFailureState } from "../types";
 
 interface authState {
-    userInfo: userState
-    loading: boolean
-    error: string
+    user: userState;
+    error: authFailureState;
 }
 
 const initialState: authState = {
-    userInfo: {
-        success: false,
-        user: {
-            role: localStorage.getItem("role") || "",
-            isAuthenticated: localStorage.getItem("isAuthenticated") === "true" ? true : false,
-            isFormCompleted: false,
-            token: localStorage.getItem("token") || "",
-        },
-        message: "",
+    user: {
+        role: localStorage.getItem("role") || "",
+        isAuthenticated: localStorage.getItem("isAuthenticated") === "true" ? true : false,
+        isFormCompleted: false,
+        token: localStorage.getItem("token") || "",
     },
-    loading: false,
-    error: ""
+    error: {
+        email: "",
+        password: "",
+    }
 }
 
 const auth = createSlice({
     name: "auth",
     initialState,
     reducers: {
-        loginRequest: (state) => {
-            state.loading = true
-        },
         setCredentials: (state, action: PayloadAction<userState>) => {
-            state.userInfo = action.payload;
-            state.loading = false
-            state.error = "";
-
-            const { role, isAuthenticated, token } = action.payload.user;
+            state.user = action.payload;
+            const { role, isAuthenticated, token } = action.payload;
             localStorage.setItem("role", role);
             localStorage.setItem("isAuthenticated", isAuthenticated.toString());
             localStorage.setItem("token", token);
-
         },
-        loginFailure: (state, action: PayloadAction<string>) => {
-            state.loading = false
-            state.error = action.payload
+        authFailure: (state, action: PayloadAction<authFailureState>) => {
+            state.error = action.payload;
+        },
+        logout: (state) => {
+            localStorage.removeItem("role");
+            localStorage.removeItem("isAuthenticated");
+            localStorage.removeItem("token");
+            state.user = {
+                role: "",
+                isAuthenticated: false,
+                isFormCompleted: false,
+                token: "",
+            }
         }
-
     }
 })
 
-export const { loginRequest, setCredentials, loginFailure } = auth.actions
+export const { setCredentials, authFailure, logout } = auth.actions
 export default auth.reducer

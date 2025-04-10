@@ -1,16 +1,20 @@
 export type userState = {
-    success: boolean,
-    user: {
-        role: string
-        isAuthenticated: boolean
-        isFormCompleted: boolean
-        token: string
-    },
-    message: string
+    role: string
+    isAuthenticated: boolean
+    isFormCompleted: boolean
+    token: string
 }
 
-
+export type authFailureState = {
+    email: string,
+    password: string
+}
 export type userLoginData = {
     email: string,
     password: string
+}
+
+export type globalResponse = {
+    success: boolean,
+    message: string
 }

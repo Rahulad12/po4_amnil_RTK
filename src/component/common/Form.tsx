@@ -1,54 +1,105 @@
-import { Fragment, useState } from "react"
-import { userLoginData } from "../../types/index.ts"
-import { useAppSelector } from "../../hooks/hook.ts";
+import { Fragment, useState } from "react";
+import { userLoginData } from "../../types";
+import { useAppSelector } from "../../hooks/hook";
+import { Eye, EyeOff } from "lucide-react";
+import ClipLoader from "react-spinners/ClipLoader";
+
 interface FormProps {
     submitHandler: (formData: userLoginData) => void;
+    formType: "login" | "register";
+    loading?: boolean
+
 }
-const Form = ({ submitHandler }: FormProps) => {
 
-    const { message } = useAppSelector(state => state?.auth?.userInfo);
-    console.log(message)
-    const validatioError = useAppSelector(state => state?.auth?.error);
-    const loading = useAppSelector(state => state?.auth?.loading);
+const Form = ({ submitHandler, formType, loading }: FormProps) => {
 
+    const { email: emailError, password: passwordError } = useAppSelector((state) => state.auth.error);
     const [formData, setFormData] = useState<userLoginData>({
-        email: '',
-        password: ''
-    })
+        email: "",
+        password: "",
+    });
+
+    const [showPassword, setShowPassword] = useState(false);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name]: value
-        })
-    }
+        setFormData((prev) => ({ ...prev, [name]: value }));
+    };
 
     const onSubmit = (e: React.FormEvent) => {
-        e.preventDefault()
-        submitHandler(formData)
-    }
+        e.preventDefault();
+        submitHandler(formData);
+    };
 
     return (
         <Fragment>
-            <form onSubmit={onSubmit}>
-                <div>
-                    <label htmlFor="email">Email</label>
-                    <input type="text" name="email" value={formData.email} onChange={handleChange} />
+            <div className="min-h-screen flex justify-center items-center bg-gray-100 px-4">
+                <div className="w-full max-w-md p-6 border border-gray-300 rounded-lg shadow-lg bg-white">
+                    <h3 className="text-2xl font-bold text-center mb-6">
+                        {formType === "register" ? "Register" : "Login"}
+                    </h3>
+
+                    <form onSubmit={onSubmit} className="space-y-4">
+                        {/* Email Field */}
+                        <div>
+                            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                                Email
+                            </label>
+                            <input
+                                id="email"
+                                name="email"
+                                type="text"
+                                value={formData.email}
+                                onChange={handleChange}
+                                className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:outline-blue-500"
+                                placeholder="Enter your email"
+                            />
+                            {emailError && <p className="text-red-500">{emailError}</p>}
+                        </div>
+
+                        {/* Password Field */}
+                        <div>
+                            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                                Password
+                            </label>
+                            <div className="relative">
+                                <input
+                                    id="password"
+                                    name="password"
+                                    type={showPassword ? "text" : "password"}
+                                    value={formData.password}
+                                    onChange={handleChange}
+                                    className="mt-1 block w-full border border-gray-300 rounded-md p-2 pr-10 focus:outline-blue-500"
+                                    placeholder="Enter your password"
+                                />
+                                <div
+                                    onClick={() => setShowPassword((prev) => !prev)}
+                                    className="absolute inset-y-3 right-2 cursor-pointer text-gray-600"
+                                >
+                                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                                </div>
+                                {passwordError && <p className="text-red-500">{passwordError}</p>}
+
+                            </div>
+                        </div>
+
+                        {/* Submit Button */}
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md flex justify-center items-center cursor-pointer"
+                        >
+                            {loading ? (
+                                <ClipLoader color="#fff" size={20} />
+                            ) : (
+                                formType === "register" ? "Register" : "Login"
+                            )}
+                        </button>
+                    </form>
                 </div>
-                <div>
-                    <label htmlFor="password">Password</label>
-                    <input type="password" name="password" value={formData.password} onChange={handleChange} />
-                </div>
-                <button type="submit">{
-                    loading ? "Loggin...." : "Login"
-                }</button>
-                {validatioError && <p style={{
-                    color: "red"
-                }}>{validatioError}</p>}
-                {message && <p>{message}</p>}
-            </form>
+            </div>
         </Fragment>
-    )
-}
+    );
+};
+
 export default Form;
