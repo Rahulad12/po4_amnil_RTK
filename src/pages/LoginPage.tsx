@@ -1,4 +1,4 @@
-import Form from "../component/common/Form.tsx";
+import Form from "../component/common/AuthForm.tsx";
 import { userLoginData } from "../types/index.ts"
 import { useLoginMutation } from "../services/userApiSlices.ts"
 import { authFailure, setCredentials } from "../slices/authSlices.tsx";

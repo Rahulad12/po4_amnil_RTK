@@ -1,4 +1,4 @@
-import { House, Key, LogOut, UserRoundPlus } from 'lucide-react';
+import { House, Key, LogOut, UserRoundPlus, User, Plus } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '../../hooks/hook';
 import { logout } from '../../slices/authSlices';
@@ -18,6 +18,16 @@ const Navbar = () => {
             label: 'Home',
             icon: House
         },
+        {
+            path: "/home/profile",
+            label: "Profile",
+            icon: User
+        },
+        {
+            path: "/home/Todo",
+            label: "Todo",
+            icon: Plus
+        }
     ]
 
     const publicLinks = [
