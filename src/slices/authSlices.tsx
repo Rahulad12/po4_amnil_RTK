@@ -1,23 +1,22 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { userState } from "../types";
-import { act } from "react";
 
 interface authState {
     userInfo: userState
     loading: boolean
-    error: string;
-
+    error: string
 }
 
 const initialState: authState = {
     userInfo: {
         success: false,
         user: {
-            role: "",
-            isAuthenticated: false,
+            role: localStorage.getItem("role") || "",
+            isAuthenticated: localStorage.getItem("isAuthenticated") === "true" ? true : false,
             isFormCompleted: false,
-            token: ""
-        }
+            token: localStorage.getItem("token") || "",
+        },
+        message: "",
     },
     loading: false,
     error: ""
@@ -30,16 +29,24 @@ const auth = createSlice({
         loginRequest: (state) => {
             state.loading = true
         },
-        loginSuccess: (state, action: PayloadAction<userState>) => {
+        setCredentials: (state, action: PayloadAction<userState>) => {
             state.userInfo = action.payload;
             state.loading = false
+            state.error = "";
+
+            const { role, isAuthenticated, token } = action.payload.user;
+            localStorage.setItem("role", role);
+            localStorage.setItem("isAuthenticated", isAuthenticated.toString());
+            localStorage.setItem("token", token);
+
         },
         loginFailure: (state, action: PayloadAction<string>) => {
             state.loading = false
             state.error = action.payload
         }
+
     }
 })
 
-export const { loginRequest, loginSuccess, loginFailure } = auth.actions
+export const { loginRequest, setCredentials, loginFailure } = auth.actions
 export default auth.reducer
